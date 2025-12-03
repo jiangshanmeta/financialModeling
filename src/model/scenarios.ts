@@ -34,7 +34,7 @@ export const defaultCostInflationScenarioConfig: CostInflationScenarioConfig = {
         },
         {
             year: ProjectedYears[4],
-            inflationRate: 2.6 * PERCENT,
+            inflationRate: 2.5 * PERCENT,
         }
     ],
     best: [

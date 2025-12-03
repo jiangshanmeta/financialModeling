@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { defaultCostInflationScenarioConfig, defaultSalesPriceScenarioConfig, defaultSalesVolumnGrowthScenarioConfig, type Scenario } from './model/scenarios'
 import { SelectScenario } from './ui/SelectScenario'
 import { calcRevenueSchedule, StartYearPricing, StartYearSalesVolumn } from './model/revenue'
+import { calcCostsSchedule } from './model/cost'
+import { DefaultAssumption } from './model/assumption'
+import { StartYear } from './model/constant'
 
 
 function App() {
@@ -18,6 +21,16 @@ function App() {
     salesVolumnGrowthScenarioConfig: defaultSalesVolumnGrowthScenarioConfig
   })
 
+  const costsSchedule = calcCostsSchedule({
+    revenueSchedule: revenueSchedule.slice(1),
+    scenario,
+    assumption: DefaultAssumption,
+    startProjectedYear: StartYear + 1,
+    costInflationScenarioConfig: defaultCostInflationScenarioConfig
+
+  })
+
+
   return (
     <div>
       <SelectScenario value={scenario} onChange={setScenario} />
@@ -25,6 +38,10 @@ function App() {
         {
           JSON.stringify(revenueSchedule, null, 4)
         }
+      </pre>
+      <br />
+      <pre>
+        {JSON.stringify(costsSchedule, null, 4)}
       </pre>
     </div>
   )

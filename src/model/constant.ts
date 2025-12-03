@@ -1,4 +1,4 @@
-export const MM = 100_000;
+export const MM = 1_000_000;
 export const PERCENT = 0.01;
 export const KILO = 1000;
 

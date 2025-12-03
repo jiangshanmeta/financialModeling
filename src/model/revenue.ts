@@ -181,6 +181,12 @@ const calcRevenue = ({
     }
 }
 
+export interface RevenueSchedule {
+    pricing: Pricing;
+    salesVolumn: SalesVolumn;
+    revenue: Revenue
+}
+
 export const calcRevenueSchedule = ({
     initialPricing,
     initialSalesVolumn,
@@ -195,7 +201,7 @@ export const calcRevenueSchedule = ({
     costInflationScenarioConfig: CostInflationScenarioConfig;
     salesPriceScenarioConfig: SalesPriceScenarioConfig;
     salesVolumnGrowthScenarioConfig: SalesVolumnGrowthScenarioConfig
-}) => {
+}): RevenueSchedule[] => {
     const projectedPricings = calcProjectedPricings({
         initialPricing,
         scenario,

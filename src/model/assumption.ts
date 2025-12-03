@@ -11,7 +11,7 @@ interface Costs {
 
 
 
-interface Assumption {
+export interface Assumption {
     costs: Costs
 }
 
