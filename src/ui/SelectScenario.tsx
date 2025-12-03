@@ -1,10 +1,10 @@
 import { Select, } from 'antd';
-import type { Scenarios } from '../model/scenarios';
+import type { Scenario } from '../model/scenarios';
 import { getScenarioText } from './util';
 
 interface SelectScenarioProps {
-    value: Scenarios;
-    onChange: (scenarios: Scenarios) => void;
+    value: Scenario;
+    onChange: (scenarios: Scenario) => void;
 }
 
 export const SelectScenario = ({

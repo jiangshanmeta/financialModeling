@@ -1,5 +1,5 @@
 import { AnnualFactoryCapacity, KILO, ProjectedYears, StartYear } from "./constant";
-import { CostInflationScenarios, SalesPriceScenarios, SalesVolumnGrowthScenarios, type Scenarios } from "./scenarios";
+import { type CostInflationScenarioConfig, type SalesPriceScenarioConfig, type SalesVolumnGrowthScenarioConfig, type Scenario } from "./scenarios";
 
 interface Pricing {
     year: number;
@@ -22,10 +22,20 @@ export const StartYearPricing: Pricing = {
     netSalesPrice: calcNetSalesPrice(StartGrossSalesPrice, StartFreightWarehousing)
 }
 
-const calcPricing = (prevYearPricing: Pricing, scenarios: Scenarios): Pricing => {
+const calcPricing = ({
+    prevYearPricing,
+    scenario,
+    costInflationScenarioConfig,
+    salesPriceScenarioConfig
+}: {
+    prevYearPricing: Pricing,
+    scenario: Scenario,
+    costInflationScenarioConfig: CostInflationScenarioConfig,
+    salesPriceScenarioConfig: SalesPriceScenarioConfig
+}): Pricing => {
     const currentYear = prevYearPricing.year + 1;
-    const inflationConfig = CostInflationScenarios[scenarios].find(item => item.year === currentYear);
-    const salesPriceConfig = SalesPriceScenarios[scenarios].find(item => item.year === currentYear);
+    const inflationConfig = costInflationScenarioConfig[scenario].find(item => item.year === currentYear);
+    const salesPriceConfig = salesPriceScenarioConfig[scenario].find(item => item.year === currentYear);
     if (!inflationConfig || !salesPriceConfig) {
         return {
             year: currentYear,
@@ -46,11 +56,28 @@ const calcPricing = (prevYearPricing: Pricing, scenarios: Scenarios): Pricing =>
     }
 }
 
-const calcProjectedPricings = (initialPricing: Pricing, scenarios: Scenarios): Pricing[] => {
+const calcProjectedPricings = ({
+    initialPricing,
+    scenario,
+    costInflationScenarioConfig,
+    salesPriceScenarioConfig
+}: {
+    initialPricing: Pricing;
+    scenario: Scenario;
+    costInflationScenarioConfig: CostInflationScenarioConfig;
+    salesPriceScenarioConfig: SalesPriceScenarioConfig
+
+}): Pricing[] => {
+
     return ProjectedYears.reduce<Pricing[]>((acc) => {
         return [
             ...acc,
-            calcPricing(acc[acc.length - 1], scenarios)
+            calcPricing({
+                prevYearPricing: acc[acc.length - 1],
+                scenario,
+                costInflationScenarioConfig,
+                salesPriceScenarioConfig
+            })
         ]
     }, [initialPricing])
 }
@@ -71,9 +98,17 @@ export const StartYearSalesVolumn: SalesVolumn = {
     impliedOperatingRate: 0
 }
 
-const calcSalesVolumn = (prevYearSalesVolumn: SalesVolumn, scenarios: Scenarios): SalesVolumn => {
+const calcSalesVolumn = ({
+    prevYearSalesVolumn,
+    scenario,
+    salesVolumnGrowthScenarioConfig
+}: {
+    prevYearSalesVolumn: SalesVolumn;
+    scenario: Scenario,
+    salesVolumnGrowthScenarioConfig: SalesVolumnGrowthScenarioConfig
+}): SalesVolumn => {
     const currentYear = prevYearSalesVolumn.year + 1
-    const salesVolumnGrowth = SalesVolumnGrowthScenarios[scenarios].find(item => item.year === currentYear)
+    const salesVolumnGrowth = salesVolumnGrowthScenarioConfig[scenario].find(item => item.year === currentYear)
 
 
     if (!salesVolumnGrowth) {
@@ -97,11 +132,23 @@ const calcSalesVolumn = (prevYearSalesVolumn: SalesVolumn, scenarios: Scenarios)
     }
 }
 
-const calcProjectedSalesVolumns = (initialSalesVolumn: SalesVolumn, scenarios: Scenarios): SalesVolumn[] => {
+const calcProjectedSalesVolumns = ({
+    initialSalesVolumn,
+    scenario,
+    salesVolumnGrowthScenarioConfig
+}: {
+    initialSalesVolumn: SalesVolumn;
+    scenario: Scenario;
+    salesVolumnGrowthScenarioConfig: SalesVolumnGrowthScenarioConfig
+}): SalesVolumn[] => {
     return ProjectedYears.reduce<SalesVolumn[]>((acc,) => {
         return [
             ...acc,
-            calcSalesVolumn(acc[acc.length - 1], scenarios)
+            calcSalesVolumn({
+                prevYearSalesVolumn: acc[acc.length - 1],
+                scenario,
+                salesVolumnGrowthScenarioConfig
+            })
         ]
     }, [initialSalesVolumn])
 }
@@ -113,7 +160,14 @@ interface Revenue {
     netRevenue: number;
 }
 
-const calcRevenue = (pricing: Pricing, salesVolumn: SalesVolumn): Revenue => {
+
+const calcRevenue = ({
+    pricing,
+    salesVolumn
+}: {
+    pricing: Pricing;
+    salesVolumn: SalesVolumn
+}): Revenue => {
 
     const grossRevenue = pricing.grossSalesPrice * salesVolumn.annualSalesVolumn
     const freightWarehousing = pricing.freightWarehousing * salesVolumn.annualSalesVolumn;
@@ -127,15 +181,38 @@ const calcRevenue = (pricing: Pricing, salesVolumn: SalesVolumn): Revenue => {
     }
 }
 
-export const calcRevenueSchedule = (initialPricing: Pricing, initialSalesVolumn: SalesVolumn, scenarios: Scenarios) => {
-    const projectedPricings = calcProjectedPricings(initialPricing, scenarios)
-    const projectedSalesVolumns = calcProjectedSalesVolumns(initialSalesVolumn, scenarios)
+export const calcRevenueSchedule = ({
+    initialPricing,
+    initialSalesVolumn,
+    scenario,
+    costInflationScenarioConfig,
+    salesPriceScenarioConfig,
+    salesVolumnGrowthScenarioConfig
+}: {
+    initialPricing: Pricing;
+    initialSalesVolumn: SalesVolumn;
+    scenario: Scenario;
+    costInflationScenarioConfig: CostInflationScenarioConfig;
+    salesPriceScenarioConfig: SalesPriceScenarioConfig;
+    salesVolumnGrowthScenarioConfig: SalesVolumnGrowthScenarioConfig
+}) => {
+    const projectedPricings = calcProjectedPricings({
+        initialPricing,
+        scenario,
+        costInflationScenarioConfig,
+        salesPriceScenarioConfig
+    })
+    const projectedSalesVolumns = calcProjectedSalesVolumns({
+        initialSalesVolumn,
+        scenario,
+        salesVolumnGrowthScenarioConfig
+    })
     return projectedPricings.map((pricing, index) => {
         const salesVolumn = projectedSalesVolumns[index]
         return {
             pricing,
             salesVolumn,
-            revenue: calcRevenue(pricing, salesVolumn)
+            revenue: calcRevenue({ pricing, salesVolumn })
         }
     })
 }

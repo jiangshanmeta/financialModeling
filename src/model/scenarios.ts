@@ -1,8 +1,8 @@
 import { PERCENT, ProjectedYears } from "./constant"
 
-export type Scenarios = "base" | "best" | "worst"
+export type Scenario = "base" | "best" | "worst"
 
-export const PriceIncreaseRate: Record<Exclude<Scenarios, "base">, number> = {
+export const PriceIncreaseRate: Record<Exclude<Scenario, "base">, number> = {
     best: 4 * PERCENT,
     worst: -4 * PERCENT,
 }
@@ -12,7 +12,9 @@ interface CostInflation {
     inflationRate: number;
 }
 
-export const CostInflationScenarios: Record<Scenarios, CostInflation[]> = {
+export type CostInflationScenarioConfig = Record<Scenario, CostInflation[]>
+
+export const defaultCostInflationScenarioConfig: CostInflationScenarioConfig = {
     base: [
         {
             year: ProjectedYears[0],
@@ -119,7 +121,9 @@ const calcSalesPrices = (salesPricePerUnits: SalesPricePerUnit[], inflationRate:
 
 }
 
-export const SalesPriceScenarios: Record<Scenarios, SalesPricePerUnit[]> = {
+export type SalesPriceScenarioConfig = Record<Scenario, SalesPricePerUnit[]>
+
+export const defaultSalesPriceScenarioConfig: SalesPriceScenarioConfig = {
     base: SalesPriceBase,
     best: calcSalesPrices(SalesPriceBase, PriceIncreaseRate.best),
     worst: calcSalesPrices(SalesPriceBase, PriceIncreaseRate.worst)
@@ -130,7 +134,9 @@ interface SalesVolumnGrowth {
     salesVolumnGrowthRate: number;
 }
 
-export const SalesVolumnGrowthScenarios: Record<Scenarios, SalesVolumnGrowth[]> = {
+export type SalesVolumnGrowthScenarioConfig = Record<Scenario, SalesVolumnGrowth[]>
+
+export const defaultSalesVolumnGrowthScenarioConfig: SalesVolumnGrowthScenarioConfig = {
     base: [
         {
             year: ProjectedYears[0],
