@@ -6,7 +6,7 @@ import { SelectScenario } from './ui/SelectScenario'
 import { calcRevenueSchedule, StartYearPricing, StartYearSalesVolumn } from './model/revenue'
 import { calcCostsSchedule } from './model/cost'
 import { DefaultAssumption } from './model/assumption'
-import { StartYear } from './model/constant'
+import { StartProjectedYear } from './model/constant'
 
 
 function App() {
@@ -25,7 +25,7 @@ function App() {
     revenueSchedule: revenueSchedule.slice(1),
     scenario,
     assumption: DefaultAssumption,
-    startProjectedYear: StartYear + 1,
+    startProjectedYear: StartProjectedYear,
     costInflationScenarioConfig: defaultCostInflationScenarioConfig
 
   })

@@ -13,6 +13,10 @@ interface Costs {
 
 export interface Assumption {
     costs: Costs
+    depreciation: {
+        yearsRemainingForDepreciationOfExistingAssets: number;
+        yearsUsedForDepreciationOfNewAssets: number
+    }
 }
 
 export const DefaultAssumption: Assumption = {
@@ -23,5 +27,9 @@ export const DefaultAssumption: Assumption = {
         operatingLabour: 43.5 * MM,
         other: 2 * MM,
         "SG&A": 3.9 * MM,
+    },
+    depreciation: {
+        yearsRemainingForDepreciationOfExistingAssets: 25,
+        yearsUsedForDepreciationOfNewAssets: 30
     }
 }

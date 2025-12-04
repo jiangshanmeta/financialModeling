@@ -217,6 +217,16 @@ const calcStartProjectedYearCosts = ({
     }
 }
 
+const matchRevenueSchedule = ({
+    revenueSchedule,
+    year
+}:{
+     revenueSchedule: RevenueSchedule[];
+     year:number
+}):RevenueSchedule=> {
+    return revenueSchedule.find(item=>item.year === year)!
+}
+
 export const calcCostsSchedule = ({
     revenueSchedule,
     assumption,
@@ -234,16 +244,22 @@ export const calcCostsSchedule = ({
     const startProjectedYearCosts = calcStartProjectedYearCosts({
         assumption,
         startProjectedYear,
-        annualSalesVolumn: revenueSchedule[0].salesVolumn.annualSalesVolumn
+        annualSalesVolumn: matchRevenueSchedule({
+            revenueSchedule,
+            year: startProjectedYear
+        }).salesVolumn.annualSalesVolumn
     })
 
-    return ProjectedYears.slice(1).reduce<Costs[]>((acc, _, index) => {
+    return ProjectedYears.slice(1).reduce<Costs[]>((acc, year) => {
         return [
             ...acc,
             calcCosts({
                 prevYearCosts: acc[acc.length - 1],
                 scenario,
-                annualSalesVolumn: revenueSchedule[index + 1].salesVolumn.annualSalesVolumn,
+                annualSalesVolumn: matchRevenueSchedule({
+                    revenueSchedule,
+                    year
+                }).salesVolumn.annualSalesVolumn,
                 costInflationScenarioConfig
             })
         ]

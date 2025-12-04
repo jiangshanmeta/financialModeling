@@ -182,6 +182,7 @@ const calcRevenue = ({
 }
 
 export interface RevenueSchedule {
+    year: number;
     pricing: Pricing;
     salesVolumn: SalesVolumn;
     revenue: Revenue
@@ -216,6 +217,7 @@ export const calcRevenueSchedule = ({
     return projectedPricings.map((pricing, index) => {
         const salesVolumn = projectedSalesVolumns[index]
         return {
+            year: pricing.year,
             pricing,
             salesVolumn,
             revenue: calcRevenue({ pricing, salesVolumn })
