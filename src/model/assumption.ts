@@ -1,4 +1,4 @@
-import { MM } from "./constant";
+import { MM, ProjectedYears } from "./constant";
 
 interface Costs {
     rawMaterials: number;
@@ -9,14 +9,19 @@ interface Costs {
     "SG&A": number;
 }
 
+interface CapitalExpenditure {
+    year: number;
+    carryingAmount: number;
+}
 
 
 export interface Assumption {
-    costs: Costs
+    costs: Costs;
     depreciation: {
         yearsRemainingForDepreciationOfExistingAssets: number;
-        yearsUsedForDepreciationOfNewAssets: number
-    }
+        yearsUsedForDepreciationOfNewAssets: number;
+    };
+    capitalExpenditure: CapitalExpenditure[]
 }
 
 export const DefaultAssumption: Assumption = {
@@ -31,5 +36,27 @@ export const DefaultAssumption: Assumption = {
     depreciation: {
         yearsRemainingForDepreciationOfExistingAssets: 25,
         yearsUsedForDepreciationOfNewAssets: 30
-    }
+    },
+    capitalExpenditure: [
+        {
+            year: ProjectedYears[0],
+            carryingAmount: 16 * MM,
+        },
+        {
+            year: ProjectedYears[1],
+            carryingAmount: 17 * MM,
+        },
+        {
+            year: ProjectedYears[2],
+            carryingAmount: 17.3 * MM
+        },
+        {
+            year: ProjectedYears[3],
+            carryingAmount: 17.5 * MM,
+        },
+        {
+            year: ProjectedYears[4],
+            carryingAmount: 18 * MM
+        }
+    ]
 }

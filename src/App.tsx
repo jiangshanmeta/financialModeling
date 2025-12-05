@@ -7,6 +7,8 @@ import { calcRevenueSchedule, StartYearPricing, StartYearSalesVolumn } from './m
 import { calcCostsSchedule } from './model/cost'
 import { DefaultAssumption } from './model/assumption'
 import { StartProjectedYear } from './model/constant'
+import { calcDepreciationSchedule } from './model/depreciation'
+import { defaultStartYearAsset } from './model/balanceSheet'
 
 
 function App() {
@@ -30,6 +32,13 @@ function App() {
 
   })
 
+  const depreciationSchedule = calcDepreciationSchedule({
+    initialCarryingValue: defaultStartYearAsset.longTermAsset.netPPE,
+    yearsRemainingForDepreciationOfExistingAssets: DefaultAssumption.depreciation.yearsRemainingForDepreciationOfExistingAssets,
+    yearsUsedForDepreciationOfNewAssets: DefaultAssumption.depreciation.yearsUsedForDepreciationOfNewAssets,
+    capitalExpenditure: DefaultAssumption.capitalExpenditure
+  })
+
 
   return (
     <div>
@@ -43,6 +52,7 @@ function App() {
       <pre>
         {JSON.stringify(costsSchedule, null, 4)}
       </pre>
+      <pre>{JSON.stringify(depreciationSchedule, null, 4)}</pre>
     </div>
   )
 }
