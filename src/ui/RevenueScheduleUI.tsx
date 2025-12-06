@@ -1,260 +1,211 @@
 import type { RevenueSchedule } from "../model/revenue";
-import { Table } from 'antd';
-import type { TableProps } from 'antd';
-import { Typography } from 'antd';
+import { Divider, Table, Typography } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import { formatDecimal, formatKILO, formatMM, formatPercent } from "./util";
 
 const { Title } = Typography;
 
+const INDEX_FIELD = "indexField";
 
-import { formatDecimal, formatKILO, formatMM, formatPercent } from "./util";
+type SectionData<T extends string> = {
+  [INDEX_FIELD]: T;
+  unit: string;
+} & Record<number, number>;
 
-type PricingKeys = keyof RevenueSchedule['pricing']
-type SalesVolumnKeys = keyof RevenueSchedule['salesVolumn']
-type RevenueKeys = keyof RevenueSchedule["revenue"]
+interface SectionConfig<T extends string> {
+  fields: T[];
+  unitMap: Record<T, string>;
+  labelMap: Record<T, string>;
+  dataExtractor: (item: RevenueSchedule) => Record<T, number> & { year: number };
+  valueFormatter: (value: number, field: T, year: number, firstYear: number) => React.ReactNode;
+}
 
-const pricingUnitMap: Record<PricingKeys, string> = {
+
+type PricingKeys = keyof RevenueSchedule['pricing'];
+type SalesVolumeKeys = keyof RevenueSchedule['salesVolumn'];
+type RevenueKeys = keyof RevenueSchedule["revenue"];
+
+
+const formatValue = {
+  percent: (value: number, year: number, firstYear: number): React.ReactNode =>
+    year === firstYear ? null : formatPercent(value),
+  decimal: (value: number): React.ReactNode => formatDecimal(value),
+  kilo: (value: number): React.ReactNode => formatKILO(value),
+  mm: (value: number): React.ReactNode => formatMM(value),
+};
+
+const pricingConfig: SectionConfig<PricingKeys> = {
+  fields: ["grossSalesPrice", "costInflation", "freightWarehousing", "netSalesPrice"],
+  unitMap: {
     year: "",
     costInflation: "(%)",
     grossSalesPrice: "($/unit)",
     freightWarehousing: "($/unit)",
     netSalesPrice: "($/unit)"
-}
-
-const salesVolumnUnitMap: Record<SalesVolumnKeys, string> = {
-    year: "",
-    annualFactoryCapacity: "(000's units)",
-    salesVolumnGrowth: "(%)",
-    annualSalesVolumn: "(000's units)",
-    impliedOperatingRate: ""
-}
-
-const revenueUnitMap: Record<RevenueKeys, string> = {
-    year: "",
-    freightWarehousing: "($ MM)",
-    grossRevenue: "($ MM)",
-    netRevenue: "($ MM)"
-}
-
-const pricingLabelMap: Record<PricingKeys, string> = {
+  },
+  labelMap: {
     year: "",
     costInflation: "Cost Inflation",
     grossSalesPrice: "Gross Sales Price",
     freightWarehousing: "Freight & Warehousing",
     netSalesPrice: "Net Sales Price"
-}
+  },
+  dataExtractor: (item) => item.pricing,
+  valueFormatter: (value, field, year, firstYear) =>
+    field === "costInflation"
+      ? formatValue.percent(value, year, firstYear)
+      : formatValue.decimal(value)
+};
 
-const salesVolumnLabelMap: Record<SalesVolumnKeys, string> = {
+const salesVolumeConfig: SectionConfig<SalesVolumeKeys> = {
+  fields: ["annualFactoryCapacity", "salesVolumnGrowth", "annualSalesVolumn", "impliedOperatingRate"],
+  unitMap: {
+    year: "",
+    annualFactoryCapacity: "(000's units)",
+    salesVolumnGrowth: "(%)",
+    annualSalesVolumn: "(000's units)",
+    impliedOperatingRate: ""
+  },
+  labelMap: {
     year: "",
     annualFactoryCapacity: "Annual Factory Capacity",
     salesVolumnGrowth: "Sales Volumn Growth",
     annualSalesVolumn: "Annual Sales Volumn",
     impliedOperatingRate: "Implied Operating Rate"
-}
+  },
+  dataExtractor: (item) => item.salesVolumn,
+  valueFormatter: (value, field, year, firstYear) => {
+    if (field === "salesVolumnGrowth" || field === "impliedOperatingRate") {
+      return formatValue.percent(value, year, firstYear);
+    }
+    return formatValue.kilo(value);
+  }
+};
 
-const revenueLabelMap: Record<RevenueKeys, string> = {
+const revenueConfig: SectionConfig<RevenueKeys> = {
+  fields: ["grossRevenue", "freightWarehousing", "netRevenue"],
+  unitMap: {
+    year: "",
+    freightWarehousing: "($ MM)",
+    grossRevenue: "($ MM)",
+    netRevenue: "($ MM)"
+  },
+  labelMap: {
     year: "",
     freightWarehousing: "Gross Revenue",
     grossRevenue: "Freight & Warehousing",
     netRevenue: "Net Revenue"
-}
+  },
+  dataExtractor: (item) => item.revenue,
+  valueFormatter: (value) => formatValue.mm(value)
+};
 
-const IndexField = "indexField"
+
+const transformData = <T extends string>(
+  revenueSchedule: RevenueSchedule[],
+  config: SectionConfig<T>
+): SectionData<T>[] => {
+  return config.fields.map((field) => {
+    const data = revenueSchedule.reduce<Record<number, number>>((acc, item) => {
+      const sectionData = config.dataExtractor(item);
+      return { ...acc, [sectionData.year]: sectionData[field] };
+    }, {});
+
+    return {
+      ...data,
+      unit: config.unitMap[field],
+      [INDEX_FIELD]: field
+    };
+  });
+};
+
+
+const generateColumns = <T extends string>(
+  years: number[],
+  config: SectionConfig<T>
+): ColumnsType<SectionData<T>> => {
+  const firstYear = years[0];
+
+  return [
+    {
+      title: '',
+      dataIndex: INDEX_FIELD,
+      key: INDEX_FIELD,
+      fixed: 'left',
+      render: (value: T) => config.labelMap[value]
+    },
+    {
+      title: "",
+      dataIndex: "unit",
+      key: "unit",
+    },
+    ...years.map(year => ({
+      title: `${year}`,
+      dataIndex: `${year}`,
+      key: `${year}`,
+      render: (value: number, record: SectionData<T>) => {
+        const field = record[INDEX_FIELD];
+        return config.valueFormatter(value, field, year, firstYear);
+      },
+      align: "right" as const,
+    }))
+  ];
+};
+
+
+const RevenueSectionTable = <T extends string>({
+  title,
+  revenueSchedule,
+  config
+}: {
+  title: string;
+  revenueSchedule: RevenueSchedule[];
+  config: SectionConfig<T>;
+}) => {
+  const years = [...new Set(revenueSchedule.map(item => item.year))].sort((a, b) => a - b);
+  const transformedData = transformData(revenueSchedule, config);
+  const columns = generateColumns(years, config);
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <Title level={3}>{title}</Title>
+      <Table<SectionData<T>>
+        dataSource={transformedData}
+        columns={columns}
+        pagination={false}
+        scroll={{ x: 'max-content' }}
+        rowKey={record => record[INDEX_FIELD]}
+      />
+    </div>
+  );
+};
 
 
 export const RevenueScheduleUI = ({ revenueSchedule }: { revenueSchedule: RevenueSchedule[] }) => {
-    const years = [...new Set(revenueSchedule.map(item => item.year))].sort((a, b) => a - b);
-    const pricingFields: PricingKeys[] = [
-        "grossSalesPrice",
-        "costInflation",
-        "freightWarehousing",
-        "netSalesPrice"
-    ]
+  return (
+    <div style={{ padding: 16 }}>
+      <Title level={2} style={{ textAlign: "center", }}>
+        Revenue Schedule
+      </Title>
+      <Divider/>
 
-    const pricingTransformedData = pricingFields.map((field) => {
-        const data = revenueSchedule.map(item => item.pricing).reduce<Record<number, number>>((acc, pricing) => {
-            return {
-                ...acc,
-                [pricing.year]: pricing[field]
-            }
+      <RevenueSectionTable<PricingKeys>
+        title="Pricing"
+        revenueSchedule={revenueSchedule}
+        config={pricingConfig}
+      />
 
-        }, {});
+      <RevenueSectionTable<SalesVolumeKeys>
+        title="Sales Volume"
+        revenueSchedule={revenueSchedule}
+        config={salesVolumeConfig}
+      />
 
-        return {
-            ...data,
-            unit: pricingUnitMap[field],
-            [IndexField]: field
-        }
-    })
-
-    const pricingColumns: TableProps<(typeof pricingTransformedData)[number]>['columns'] = [
-        {
-            title: '',
-            dataIndex: IndexField,
-            key: IndexField,
-            fixed: 'left',
-            render: (value: PricingKeys) => {
-
-                return pricingLabelMap[value]
-            },
-        },
-        {
-            title: "",
-            dataIndex: "unit",
-            key: "unit",
-        },
-        ...years.map(year => ({
-            title: `${year}`,
-            dataIndex: year,
-            key: year,
-            render: (value: number, _: (typeof pricingTransformedData)[number], index: number) => {
-
-                if (pricingFields[index] === "costInflation") {
-                    if (year === years[0]) {
-                        return null;
-                    }
-                    return formatPercent(value)
-                }
-                return formatDecimal(value);
-            },
-            align: "right" as const,
-
-        })),
-    ];
-
-    const salesValumnFields: SalesVolumnKeys[] = [
-        "annualFactoryCapacity",
-        "salesVolumnGrowth",
-        "annualSalesVolumn",
-        "impliedOperatingRate"
-    ]
-    const salesVolumnTransformedData = salesValumnFields.map((field) => {
-        const data = revenueSchedule.map(item => item.salesVolumn).reduce<Record<number, number>>((acc, pricing) => {
-            return {
-                ...acc,
-                [pricing.year]: pricing[field]
-            }
-
-        }, {});
-
-        return {
-            ...data,
-            unit: salesVolumnUnitMap[field],
-            [IndexField]: field
-        }
-    })
-
-    const salesVolumnColumns: TableProps<(typeof salesVolumnTransformedData)[number]>['columns'] = [
-        {
-            title: '',
-            dataIndex: IndexField,
-            key: IndexField,
-            fixed: 'left',
-            render: (value: SalesVolumnKeys) => {
-
-                return salesVolumnLabelMap[value]
-            },
-        },
-        {
-            title: "",
-            dataIndex: "unit",
-            key: "unit",
-        },
-        ...years.map(year => ({
-            title: `${year}`,
-            dataIndex: year,
-            key: year,
-            render: (value: number, _: (typeof salesVolumnTransformedData)[number], index: number) => {
-
-                if (salesValumnFields[index] === "salesVolumnGrowth" || salesValumnFields[index] === "impliedOperatingRate") {
-                    if (year === years[0]) {
-                        return null;
-                    }
-                    return formatPercent(value)
-                }
-                return formatKILO(value);
-            },
-            align: "right" as const,
-
-        })),
-    ];
-
-    const revenueFields: RevenueKeys[] = [
-        "grossRevenue",
-        "freightWarehousing",
-        "netRevenue"
-
-    ]
-
-    const revenueTransformedData = revenueFields.map((field) => {
-        const data = revenueSchedule.map(item => item.revenue).reduce<Record<number, number>>((acc, pricing) => {
-            return {
-                ...acc,
-                [pricing.year]: pricing[field]
-            }
-
-        }, {});
-
-        return {
-            ...data,
-            unit: revenueUnitMap[field],
-            [IndexField]: field
-        }
-    })
-
-    const revenueColumns: TableProps<(typeof revenueTransformedData)[number]>['columns'] = [
-        {
-            title: '',
-            dataIndex: IndexField,
-            key: IndexField,
-            fixed: 'left',
-            render: (value: RevenueKeys) => {
-
-                return revenueLabelMap[value]
-            },
-        },
-        {
-            title: "",
-            dataIndex: "unit",
-            key: "unit",
-        },
-        ...years.map(year => ({
-            title: `${year}`,
-            dataIndex: year,
-            key: year,
-            render: (value: number) => {
-                return formatMM(value);
-            },
-            align: "right" as const,
-
-        })),
-    ];
-
-
-    return (
-        <div>
-            <Title level={2} style={{ textAlign: "center" }}>Revenue Schedule</Title>
-            <Title level={3}>Pricing</Title>
-            <Table
-                dataSource={pricingTransformedData}
-                columns={pricingColumns}
-                pagination={false}
-            />
-            <Title level={3}>Sales Volumn</Title>
-            <Table
-                dataSource={salesVolumnTransformedData}
-                columns={salesVolumnColumns}
-                pagination={false}
-            />
-            <Title level={3}>Revenue</Title>
-            <Table
-                dataSource={revenueTransformedData}
-                columns={revenueColumns}
-                pagination={false}
-            />
-        </div>
-
-
-
-    )
-
-}
+      <RevenueSectionTable<RevenueKeys>
+        title="Revenue"
+        revenueSchedule={revenueSchedule}
+        config={revenueConfig}
+      />
+    </div>
+  );
+};
