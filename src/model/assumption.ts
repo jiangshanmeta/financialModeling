@@ -1,4 +1,4 @@
-import { MM, ProjectedYears } from "./constant";
+import { MM, PERCENT, ProjectedYears } from "./constant";
 
 interface Costs {
     rawMaterials: number;
@@ -21,7 +21,14 @@ export interface Assumption {
         yearsRemainingForDepreciationOfExistingAssets: number;
         yearsUsedForDepreciationOfNewAssets: number;
     };
-    capitalExpenditure: CapitalExpenditure[]
+    capitalExpenditure: CapitalExpenditure[];
+    tax: {
+        taxRate: number;
+        reductionInEBTForTimingDifferences: Array<{
+            year: number;
+            amount: number;
+        }>
+    }
 }
 
 export const DefaultAssumption: Assumption = {
@@ -58,5 +65,30 @@ export const DefaultAssumption: Assumption = {
             year: ProjectedYears[4],
             carryingAmount: 18 * MM
         }
-    ]
+    ],
+    tax: {
+        taxRate: 35 * PERCENT,
+        reductionInEBTForTimingDifferences: [
+            {
+                year: ProjectedYears[0],
+                amount: 5 * MM,
+            },
+            {
+                year: ProjectedYears[1],
+                amount: 5 * MM,
+            },
+            {
+                year: ProjectedYears[2],
+                amount: 5 * MM,
+            },
+            {
+                year: ProjectedYears[3],
+                amount: 5 * MM,
+            },
+            {
+                year: ProjectedYears[4],
+                amount: 5 * MM,
+            },
+        ]
+    }
 }

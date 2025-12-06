@@ -6,10 +6,11 @@ import { SelectScenario } from './ui/SelectScenario'
 import { calcRevenueSchedule, StartYearPricing, StartYearSalesVolumn } from './model/revenue'
 import { calcCostsSchedule } from './model/cost'
 import { DefaultAssumption } from './model/assumption'
-import { StartProjectedYear } from './model/constant'
+import { MM, StartProjectedYear } from './model/constant'
 import { calcDepreciationSchedule } from './model/depreciation'
 import { defaultStartYearAsset } from './model/balanceSheet'
 import { RevenueScheduleUI } from './ui/RevenueScheduleUI'
+import { calcIncomeTax } from './model/incomeTax'
 
 
 function App() {
@@ -50,6 +51,11 @@ function App() {
         {JSON.stringify(costsSchedule, null, 4)}
       </pre>
       <pre>{JSON.stringify(depreciationSchedule, null, 4)}</pre>
+      <pre>{JSON.stringify(calcIncomeTax({
+        year: 2023,
+        assumption: DefaultAssumption,
+        accountingEBT: 57.4 * MM
+      }), null, 4)}</pre>
     </div>
   )
 }
