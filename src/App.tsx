@@ -9,6 +9,7 @@ import { DefaultAssumption } from './model/assumption'
 import { StartProjectedYear } from './model/constant'
 import { calcDepreciationSchedule } from './model/depreciation'
 import { defaultStartYearAsset } from './model/balanceSheet'
+import { RevenueScheduleUI } from './ui/RevenueScheduleUI'
 
 
 function App() {
@@ -43,11 +44,7 @@ function App() {
   return (
     <div>
       <SelectScenario value={scenario} onChange={setScenario} />
-      <pre>
-        {
-          JSON.stringify(revenueSchedule, null, 4)
-        }
-      </pre>
+      <RevenueScheduleUI revenueSchedule={revenueSchedule} />
       <br />
       <pre>
         {JSON.stringify(costsSchedule, null, 4)}
