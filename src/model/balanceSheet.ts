@@ -1,4 +1,4 @@
-import { MM } from "./constant";
+import { MM, StartYear } from "./constant";
 
 interface CurrentAsset {
     year: number;
@@ -20,7 +20,7 @@ const calcTotalCurrentAsset = ({
 
 interface LongTermAsset {
     year: number;
-    netPPE : number;
+    netPPE: number;
     longTermAssetOther: number;
     totalLongTermAsset: number;
 }
@@ -28,7 +28,7 @@ interface LongTermAsset {
 const calcTotalLongTermAsset = ({
     netPPE,
     longTermAssetOther
-}:Omit<LongTermAsset,"year" | "totalLongTermAsset" >)=> netPPE+longTermAssetOther
+}: Omit<LongTermAsset, "year" | "totalLongTermAsset">) => netPPE + longTermAssetOther
 
 interface Asset {
     year: number;
@@ -40,7 +40,7 @@ interface Asset {
 const calcTotalAsset = ({
     currentAsset,
     longTermAsset
-}:Omit<Asset,"year" | "totalAsset">)=> currentAsset.totalCurrentAsset + longTermAsset.totalLongTermAsset
+}: Omit<Asset, "year" | "totalAsset">) => currentAsset.totalCurrentAsset + longTermAsset.totalLongTermAsset
 
 
 const createAsset = ({
@@ -52,7 +52,7 @@ const createAsset = ({
     currentAssetOther,
     netPPE,
     longTermAssetOther
-}:Omit<CurrentAsset,"totalCurrentAsset">&Omit<LongTermAsset,"totalLongTermAsset"> ):Asset=>{
+}: Omit<CurrentAsset, "totalCurrentAsset"> & Omit<LongTermAsset, "totalLongTermAsset">): Asset => {
     const currentAsset: CurrentAsset = {
         year,
         cash,
@@ -61,10 +61,10 @@ const createAsset = ({
         prepaidExpenses,
         currentAssetOther,
         totalCurrentAsset: calcTotalCurrentAsset({
-            cash, 
-            accountReceiveable, 
-            inventory, 
-            prepaidExpenses, 
+            cash,
+            accountReceiveable,
+            inventory,
+            prepaidExpenses,
             currentAssetOther
         })
     }
@@ -91,8 +91,125 @@ const createAsset = ({
 
 }
 
+interface CurrentLiability {
+    year: number;
+    bankDebtRevolver: number;
+    accountsPayable: number;
+    otherCurrentLiability: number;
+    totalCurrentLiability: number;
+}
+
+interface LongTermLiability {
+    year: number;
+    deferredIncomeTaxes: number;
+    seniorSecuredTermDebt: number;
+    totalLongTermLiability: number;
+}
+
+interface Liability {
+    year: number;
+    currentLiability: CurrentLiability;
+    longTermLiability: LongTermLiability;
+    totalLiability: number;
+}
+
+const calcTotalCurrentLiability = ({
+    bankDebtRevolver,
+    accountsPayable,
+    otherCurrentLiability
+}: Omit<CurrentLiability, "year" | "totalCurrentLiability">) => bankDebtRevolver + accountsPayable + otherCurrentLiability
+
+
+const calcTotalLongTermLiability = ({
+    deferredIncomeTaxes,
+    seniorSecuredTermDebt
+}: Omit<LongTermLiability, "year" | "totalLongTermLiability">) => deferredIncomeTaxes + seniorSecuredTermDebt
+
+const calcTotalLiability = ({
+    currentLiability,
+    longTermLiability
+}: {
+    currentLiability: CurrentLiability;
+    longTermLiability: LongTermLiability;
+}) => {
+    return currentLiability.totalCurrentLiability + longTermLiability.totalLongTermLiability
+}
+
+
+
+const createLiability = ({
+    year,
+    bankDebtRevolver,
+    accountsPayable,
+    otherCurrentLiability,
+    deferredIncomeTaxes,
+    seniorSecuredTermDebt
+}: Omit<CurrentLiability, "totalCurrentLiability"> & Omit<LongTermLiability, "totalLongTermLiability">
+
+): Liability => {
+
+    const currentLiability: CurrentLiability = {
+        year,
+        bankDebtRevolver,
+        accountsPayable,
+        otherCurrentLiability,
+        totalCurrentLiability: calcTotalCurrentLiability({
+            bankDebtRevolver,
+            accountsPayable,
+            otherCurrentLiability,
+        })
+
+    }
+
+    const longTermLiability: LongTermLiability = {
+        year,
+        deferredIncomeTaxes,
+        seniorSecuredTermDebt,
+        totalLongTermLiability: calcTotalLongTermLiability({
+            deferredIncomeTaxes,
+            seniorSecuredTermDebt,
+        })
+    }
+
+    return {
+        year,
+        currentLiability,
+        longTermLiability,
+        totalLiability: calcTotalLiability({
+            currentLiability,
+            longTermLiability
+        })
+    }
+
+
+}
+
+
+interface Equity {
+    year: number;
+    commonShares: number;
+    retainedEarnings: number;
+    totalEquity: number;
+}
+
+const calcTotalEquity = ({ commonShares, retainedEarnings }: Omit<Equity, "year" | "totalEquity">) => commonShares + retainedEarnings
+
+const createEquity = ({ year, commonShares, retainedEarnings }: Omit<Equity, "totalEquity">): Equity => {
+
+    return {
+        year,
+        commonShares,
+        retainedEarnings,
+        totalEquity: calcTotalEquity({
+            commonShares,
+            retainedEarnings,
+        })
+    }
+
+}
+
 export const defaultStartYearAsset = createAsset({
-    year: 2022,
+    year: StartYear,
     cash: 0.3 * MM,
     accountReceiveable: 28.3 * MM,
     inventory: 35.1 * MM,
@@ -100,4 +217,20 @@ export const defaultStartYearAsset = createAsset({
     currentAssetOther: 1.2 * MM,
     netPPE: 397.7 * MM,
     longTermAssetOther: 12.0 * MM
+})
+
+
+export const defaultStartYearLiability = createLiability({
+    year: StartYear,
+    bankDebtRevolver: 0.0 * MM,
+    accountsPayable: 18.2 * MM,
+    otherCurrentLiability: 4.8 * MM,
+    deferredIncomeTaxes: 8.0 * MM,
+    seniorSecuredTermDebt: 200.0 * MM,
+})
+
+export const defaultStartYearEquity = createEquity({
+    year: StartYear,
+    commonShares: 120.0 * MM,
+    retainedEarnings: 138.6 * MM,
 })
