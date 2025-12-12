@@ -12,6 +12,7 @@ import { defaultStartYearAsset } from './model/balanceSheet'
 import { RevenueScheduleUI } from './ui/RevenueScheduleUI'
 import { calcIncomeTax } from './model/incomeTax'
 import { CostScheduleUI } from './ui/CostScheduleUI'
+import { DepreciationUI } from './ui/DepreciationUI'
 
 
 function App() {
@@ -48,9 +49,9 @@ function App() {
       <SelectScenario value={scenario} onChange={setScenario} />
       <RevenueScheduleUI revenueSchedule={revenueSchedule} />
       <CostScheduleUI costsSchedule={costsSchedule}/>
+      <DepreciationUI depreciationSchedule={depreciationSchedule} />
       <br />
 
-      <pre>{JSON.stringify(depreciationSchedule, null, 4)}</pre>
       <pre>{JSON.stringify(calcIncomeTax({
         year: 2023,
         assumption: DefaultAssumption,

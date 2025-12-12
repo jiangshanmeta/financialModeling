@@ -73,7 +73,7 @@ const calcDepreciationFromNewAssetSchedule = ({
     return depreciationSchedule
 }
 
-interface DepreciationSchedule {
+export interface DepreciationSchedule {
     fromExistingAsset: DepreciationFromExistingAsset[];
     fromNewAsset: DepreciationFromNewAsset[];
     aggregateDepreciation: Array<{
@@ -108,9 +108,6 @@ export const calcDepreciationSchedule = ({
             carryingAmount: 0,
         }
     })
-
-    console.log("aggregateDepreciation", aggregateDepreciation)
-    console.log('fromExistingAsset', fromExistingAsset)
 
     for (const { depreciationYear, amount } of fromExistingAsset) {
         aggregateDepreciation.find(item => item.year === depreciationYear)!.carryingAmount += amount;
