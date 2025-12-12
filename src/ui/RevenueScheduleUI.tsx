@@ -175,6 +175,7 @@ const RevenueSectionTable = <T extends string>({
         pagination={false}
         scroll={{ x: 'max-content' }}
         rowKey={record => record[INDEX_FIELD]}
+        size="small"
       />
     </div>
   );

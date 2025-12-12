@@ -3,14 +3,14 @@ import type { Assumption } from "./assumption";
 import type { RevenueSchedule } from "./revenue";
 import { ProjectedYears } from "./constant";
 
-interface VariableCosts {
+export interface VariableCosts {
     year: number;
     rawMaterials: number;
     utilities: number;
     totalVariableCosts: number;
 }
 
-interface FixedCosts {
+export interface FixedCosts {
     year: number;
     rent: number;
     operatingLabour: number;
@@ -32,7 +32,7 @@ interface CostsInTotal {
     totalCosts: number;
 }
 
-interface Costs {
+export interface Costs {
     year: number;
     costsPerUnit: CostsPerUnit;
     costsInTotal: CostsInTotal;
@@ -86,7 +86,7 @@ const toInTotal = ({
 }): VariableCosts => {
     return {
         year: variableCosts.year,
-        rawMaterials: variableCosts.year * annualSalesVolumn,
+        rawMaterials: variableCosts.rawMaterials * annualSalesVolumn,
         utilities: variableCosts.utilities * annualSalesVolumn,
         totalVariableCosts: variableCosts.totalVariableCosts * annualSalesVolumn,
     }
@@ -249,6 +249,11 @@ export const calcCostsSchedule = ({
             year: startProjectedYear
         }).salesVolumn.annualSalesVolumn
     })
+
+    console.log("sale volumn",matchRevenueSchedule({
+            revenueSchedule,
+            year: startProjectedYear
+        }).salesVolumn.annualSalesVolumn)
 
     return ProjectedYears.slice(1).reduce<Costs[]>((acc, year) => {
         return [
