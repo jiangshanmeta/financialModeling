@@ -58,6 +58,8 @@ const predicateBalanceSheetByWorkingCapitalDays = ({
 
 }
 
+export type WorkingCapitalBalanceSheet = ReturnType<typeof predicateBalanceSheetByWorkingCapitalDays>
+
 const calcWorkingCapitalDaysByBalanceSheet = ({
     year,
     netRevenue,
@@ -85,10 +87,10 @@ const calcWorkingCapitalDaysByBalanceSheet = ({
 
 }
 
-interface WorkingCapitalSchedule {
+export interface WorkingCapitalSchedule {
     year: number;
     workingCapitalDays: WorkingCapitalDays;
-    balanceSheet: ReturnType<typeof predicateBalanceSheetByWorkingCapitalDays>
+    balanceSheet: WorkingCapitalBalanceSheet
 }
 
 

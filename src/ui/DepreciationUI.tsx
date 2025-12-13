@@ -10,7 +10,6 @@ export const DepreciationUI = ({ depreciationSchedule }: {
     depreciationSchedule: DepreciationSchedule
 }) => {
     const years = [...new Set(depreciationSchedule.aggregateDepreciation.map(item => item.year))].sort((a, b) => a - b);
-    // const capexes = years.map
 
     const CAPEX = years.map((year) => {
 

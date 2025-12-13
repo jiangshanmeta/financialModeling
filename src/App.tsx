@@ -14,6 +14,7 @@ import { calcIncomeTax } from './model/incomeTax'
 import { CostScheduleUI } from './ui/CostScheduleUI'
 import { DepreciationUI } from './ui/DepreciationUI'
 import { calcWorkingCapitalSchedule } from './model/workingCapital'
+import { WorkingCapitalUI } from './ui/WorkingCapitalUI'
 
 
 function App() {
@@ -44,7 +45,7 @@ function App() {
     capitalExpenditure: DefaultAssumption.capitalExpenditure
   })
 
-  const workingCapital = calcWorkingCapitalSchedule({
+  const workingCapitalSchedule = calcWorkingCapitalSchedule({
     revenueSchedule,
     costs: [
       {
@@ -98,6 +99,7 @@ function App() {
       <RevenueScheduleUI revenueSchedule={revenueSchedule} />
       <CostScheduleUI costsSchedule={costsSchedule} />
       <DepreciationUI depreciationSchedule={depreciationSchedule} />
+      <WorkingCapitalUI workingCapitalSchedule={workingCapitalSchedule} />
       <br />
 
       <pre>{JSON.stringify(calcIncomeTax({
@@ -105,8 +107,6 @@ function App() {
         assumption: DefaultAssumption,
         accountingEBT: 57.4 * MM
       }), null, 4)}</pre>
-
-      <pre>{JSON.stringify(workingCapital, null, 4)}</pre>
     </div>
   )
 }
