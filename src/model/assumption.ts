@@ -39,7 +39,14 @@ export interface Assumption {
             amount: number;
         }>
     };
-    workingCapitalDays: WorkingCapitalDays[]
+    workingCapitalDays: WorkingCapitalDays[];
+    equity: {
+        commonDividendPayoutRate: number;
+        commonStockInsurance: Array<{
+            year: number;
+            amount: number;
+        }>
+    }
 }
 
 export const DefaultAssumption: Assumption = {
@@ -148,5 +155,31 @@ export const DefaultAssumption: Assumption = {
             accountsPayable: 40,
             otherLiabilities: 10
         }
-    ]
+    ],
+    equity: {
+        commonDividendPayoutRate: 20 * PERCENT,
+        commonStockInsurance: [
+            {
+                year: ProjectedYears[0],
+                amount: 0,
+            },
+            {
+                year: ProjectedYears[1],
+                amount: 0,
+            },
+            {
+                year: ProjectedYears[2],
+                amount: 0,
+            },
+            {
+                year: ProjectedYears[3],
+                amount: 0,
+            },
+            {
+                year: ProjectedYears[4],
+                amount: 0,
+            },
+
+        ]
+    }
 }
