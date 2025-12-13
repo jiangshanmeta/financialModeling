@@ -14,6 +14,16 @@ interface CapitalExpenditure {
     carryingAmount: number;
 }
 
+export interface WorkingCapitalDays {
+    year: number;
+    accountsReceivable: number;
+    inventories: number;
+    prepaidExpenses: number;
+    otherAssets: number;
+    accountsPayable: number;
+    otherLiabilities: number;
+}
+
 
 export interface Assumption {
     costs: Costs;
@@ -28,7 +38,8 @@ export interface Assumption {
             year: number;
             amount: number;
         }>
-    }
+    };
+    workingCapitalDays: WorkingCapitalDays[]
 }
 
 export const DefaultAssumption: Assumption = {
@@ -90,5 +101,52 @@ export const DefaultAssumption: Assumption = {
                 amount: 5 * MM,
             },
         ]
-    }
+    },
+    workingCapitalDays: [
+        {
+            year: ProjectedYears[0],
+            accountsReceivable: 48,
+            inventories: 70,
+            prepaidExpenses: 30,
+            otherAssets: 3,
+            accountsPayable: 40,
+            otherLiabilities: 10
+        },
+        {
+            year: ProjectedYears[1],
+            accountsReceivable: 44,
+            inventories: 65,
+            prepaidExpenses: 30,
+            otherAssets: 3,
+            accountsPayable: 40,
+            otherLiabilities: 10
+        },
+        {
+            year: ProjectedYears[2],
+            accountsReceivable: 40,
+            inventories: 60,
+            prepaidExpenses: 30,
+            otherAssets: 3,
+            accountsPayable: 40,
+            otherLiabilities: 10
+        },
+        {
+            year: ProjectedYears[3],
+            accountsReceivable: 40,
+            inventories: 60,
+            prepaidExpenses: 30,
+            otherAssets: 3,
+            accountsPayable: 40,
+            otherLiabilities: 10
+        },
+        {
+            year: ProjectedYears[4],
+            accountsReceivable: 40,
+            inventories: 55,
+            prepaidExpenses: 30,
+            otherAssets: 3,
+            accountsPayable: 40,
+            otherLiabilities: 10
+        }
+    ]
 }

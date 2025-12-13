@@ -220,11 +220,11 @@ const calcStartProjectedYearCosts = ({
 const matchRevenueSchedule = ({
     revenueSchedule,
     year
-}:{
-     revenueSchedule: RevenueSchedule[];
-     year:number
-}):RevenueSchedule=> {
-    return revenueSchedule.find(item=>item.year === year)!
+}: {
+    revenueSchedule: RevenueSchedule[];
+    year: number
+}): RevenueSchedule => {
+    return revenueSchedule.find(item => item.year === year)!
 }
 
 export const calcCostsSchedule = ({
@@ -249,11 +249,6 @@ export const calcCostsSchedule = ({
             year: startProjectedYear
         }).salesVolumn.annualSalesVolumn
     })
-
-    console.log("sale volumn",matchRevenueSchedule({
-            revenueSchedule,
-            year: startProjectedYear
-        }).salesVolumn.annualSalesVolumn)
 
     return ProjectedYears.slice(1).reduce<Costs[]>((acc, year) => {
         return [

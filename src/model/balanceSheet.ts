@@ -1,9 +1,9 @@
 import { MM, StartYear } from "./constant";
 
-interface CurrentAsset {
+export interface CurrentAsset {
     year: number;
     cash: number;
-    accountReceiveable: number;
+    accountsReceivable: number;
     inventory: number;
     prepaidExpenses: number;
     currentAssetOther: number;
@@ -12,11 +12,11 @@ interface CurrentAsset {
 
 const calcTotalCurrentAsset = ({
     cash,
-    accountReceiveable,
+    accountsReceivable,
     inventory,
     prepaidExpenses,
     currentAssetOther
-}: Omit<CurrentAsset, "year" | "totalCurrentAsset">) => cash + accountReceiveable + inventory + prepaidExpenses + currentAssetOther;
+}: Omit<CurrentAsset, "year" | "totalCurrentAsset">) => cash + accountsReceivable + inventory + prepaidExpenses + currentAssetOther;
 
 interface LongTermAsset {
     year: number;
@@ -46,7 +46,7 @@ const calcTotalAsset = ({
 const createAsset = ({
     year,
     cash,
-    accountReceiveable,
+    accountsReceivable,
     inventory,
     prepaidExpenses,
     currentAssetOther,
@@ -56,13 +56,13 @@ const createAsset = ({
     const currentAsset: CurrentAsset = {
         year,
         cash,
-        accountReceiveable,
+        accountsReceivable,
         inventory,
         prepaidExpenses,
         currentAssetOther,
         totalCurrentAsset: calcTotalCurrentAsset({
             cash,
-            accountReceiveable,
+            accountsReceivable,
             inventory,
             prepaidExpenses,
             currentAssetOther
@@ -91,7 +91,7 @@ const createAsset = ({
 
 }
 
-interface CurrentLiability {
+export interface CurrentLiability {
     year: number;
     bankDebtRevolver: number;
     accountsPayable: number;
@@ -192,6 +192,12 @@ interface Equity {
     totalEquity: number;
 }
 
+export interface BalanceSheet {
+    asset: Asset,
+    liability: Liability,
+    equity: Equity
+}
+
 const calcTotalEquity = ({ commonShares, retainedEarnings }: Omit<Equity, "year" | "totalEquity">) => commonShares + retainedEarnings
 
 const createEquity = ({ year, commonShares, retainedEarnings }: Omit<Equity, "totalEquity">): Equity => {
@@ -211,7 +217,7 @@ const createEquity = ({ year, commonShares, retainedEarnings }: Omit<Equity, "to
 export const defaultStartYearAsset = createAsset({
     year: StartYear,
     cash: 0.3 * MM,
-    accountReceiveable: 28.3 * MM,
+    accountsReceivable: 28.3 * MM,
     inventory: 35.1 * MM,
     prepaidExpenses: 14.9 * MM,
     currentAssetOther: 1.2 * MM,
@@ -234,3 +240,9 @@ export const defaultStartYearEquity = createEquity({
     commonShares: 120.0 * MM,
     retainedEarnings: 138.6 * MM,
 })
+
+export const defaultStartYearBalanceSheet: BalanceSheet = {
+    asset: defaultStartYearAsset,
+    liability: defaultStartYearLiability,
+    equity: defaultStartYearEquity
+}
