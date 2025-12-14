@@ -10,11 +10,11 @@ import { MM, StartProjectedYear, StartYear } from './model/constant'
 import { calcDepreciationSchedule } from './model/depreciation'
 import { defaultStartYearAsset, defaultStartYearBalanceSheet } from './model/balanceSheet'
 import { RevenueScheduleUI } from './ui/RevenueScheduleUI'
-import { calcIncomeTax } from './model/incomeTax'
 import { CostScheduleUI } from './ui/CostScheduleUI'
 import { DepreciationUI } from './ui/DepreciationUI'
 import { calcWorkingCapitalSchedule } from './model/workingCapital'
 import { WorkingCapitalUI } from './ui/WorkingCapitalUI'
+import { createIncomeStatement } from './model/incomeStatement'
 
 
 function App() {
@@ -102,11 +102,23 @@ function App() {
       <WorkingCapitalUI workingCapitalSchedule={workingCapitalSchedule} />
       <br />
 
-      <pre>{JSON.stringify(calcIncomeTax({
-        year: 2023,
-        assumption: DefaultAssumption,
-        accountingEBT: 57.4 * MM
-      }), null, 4)}</pre>
+      <pre>{
+        JSON.stringify(createIncomeStatement({
+          revenueSchedule: revenueSchedule[1],
+          costs: costsSchedule[0],
+          year: StartProjectedYear,
+          assumption: DefaultAssumption,
+          costInflationScenarioConfig: defaultCostInflationScenarioConfig,
+          scenario,
+          prevYear: {
+            cash: 0.3 * MM,
+            revolver: 0 * MM,
+            seniorSecuredTermDebt: 200 * MM,
+          },
+          depreciationSchedule,
+        }), null, 4)
+
+      }</pre>
     </div>
   )
 }

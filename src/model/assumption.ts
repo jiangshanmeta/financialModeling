@@ -46,7 +46,16 @@ export interface Assumption {
             year: number;
             amount: number;
         }>
-    }
+    };
+    interestRate: {
+        interestRateOnCashBalances: number;
+        interestRateOnBankRevolver: number;
+        interestRateOnSeniorSecuredTermDebt: number;
+    };
+    costAdjustment: Array<{
+        year: number;
+        amount: number;
+    }>
 }
 
 export const DefaultAssumption: Assumption = {
@@ -179,7 +188,33 @@ export const DefaultAssumption: Assumption = {
                 year: ProjectedYears[4],
                 amount: 0,
             },
-
         ]
-    }
+    },
+    interestRate: {
+        interestRateOnCashBalances: 1 * PERCENT,
+        interestRateOnBankRevolver: 6 * PERCENT,
+        interestRateOnSeniorSecuredTermDebt: 6 * PERCENT
+    },
+    costAdjustment: [
+        {
+            year: ProjectedYears[0],
+            amount: 0,
+        },
+        {
+            year: ProjectedYears[1],
+            amount: 0,
+        },
+        {
+            year: ProjectedYears[2],
+            amount: 0,
+        },
+        {
+            year: ProjectedYears[3],
+            amount: 0,
+        },
+        {
+            year: ProjectedYears[4],
+            amount: 0,
+        },
+    ]
 }

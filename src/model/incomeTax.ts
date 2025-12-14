@@ -14,9 +14,9 @@ export const calcIncomeTax = ({
     const governmentEBT = accountingEBT - timingDifference;
 
     const accountingTax = accountingEBT * taxRate;
-    const currentTax = taxRate * governmentEBT;
+    const currentTax = governmentEBT * taxRate;
 
-    const DTL = accountingEBT - currentTax;
+    const DTL = accountingTax - currentTax;
 
     return {
         accountingEBT,

@@ -80,7 +80,7 @@ export const DepreciationUI = ({ depreciationSchedule }: {
             style={{ padding: 16 }}
         >
             <Title level={2} style={{ textAlign: "center", }}>
-                Cost Schedule
+                Depreciation Schedule
             </Title>
             <Table
                 dataSource={data}
