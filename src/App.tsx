@@ -8,13 +8,13 @@ import { calcCostsSchedule } from './model/cost'
 import { DefaultAssumption } from './model/assumption'
 import { MM, StartProjectedYear, StartYear } from './model/constant'
 import { calcDepreciationSchedule } from './model/depreciation'
-import { defaultStartYearAsset, defaultStartYearBalanceSheet } from './model/balanceSheet'
 import { RevenueScheduleUI } from './ui/RevenueScheduleUI'
 import { CostScheduleUI } from './ui/CostScheduleUI'
 import { DepreciationUI } from './ui/DepreciationUI'
 import { calcWorkingCapitalSchedule } from './model/workingCapital'
 import { WorkingCapitalUI } from './ui/WorkingCapitalUI'
 import { createIncomeStatement } from './model/incomeStatement'
+import { StartYearLananceSheet } from './data'
 
 
 function App() {
@@ -39,7 +39,7 @@ function App() {
   })
 
   const depreciationSchedule = calcDepreciationSchedule({
-    initialCarryingValue: defaultStartYearAsset.longTermAsset.netPPE,
+    initialCarryingValue: StartYearLananceSheet().asset.longTermAsset.netPPE,
     yearsRemainingForDepreciationOfExistingAssets: DefaultAssumption.depreciation.yearsRemainingForDepreciationOfExistingAssets,
     yearsUsedForDepreciationOfNewAssets: DefaultAssumption.depreciation.yearsUsedForDepreciationOfNewAssets,
     capitalExpenditure: DefaultAssumption.capitalExpenditure
@@ -50,46 +50,12 @@ function App() {
     costs: [
       {
         year: StartYear,
-        costsPerUnit: {
-          year: 0,
-          variableCosts: {
-            year: 0,
-            rawMaterials: 0,
-            utilities: 0,
-            totalVariableCosts: 0
-          },
-          fixedCosts: {
-            year: 0,
-            rent: 0,
-            operatingLabour: 0,
-            other: 0,
-            totalFixedCosts: 0
-          },
-          totalCosts: 0
-        },
-        costsInTotal: {
-          year: 0,
-          variableCosts: {
-            year: 0,
-            rawMaterials: 0,
-            utilities: 0,
-            totalVariableCosts: 0
-          },
-          fixedCosts: {
-            year: 0,
-            rent: 0,
-            operatingLabour: 0,
-            other: 0,
-            totalFixedCosts: 0
-          },
-          totalCosts: 167.9 * MM,
-        }
+        amount: 167.9 * MM
       },
-
       ...costsSchedule
     ],
     workingCapitalDays: DefaultAssumption.workingCapitalDays,
-    historyBalanceSheet: [defaultStartYearBalanceSheet]
+    historyBalanceSheet: [StartYearLananceSheet()]
   })
 
 

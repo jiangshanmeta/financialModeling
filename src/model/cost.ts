@@ -36,6 +36,7 @@ export interface Costs {
     year: number;
     costsPerUnit: CostsPerUnit;
     costsInTotal: CostsInTotal;
+    amount: number;
 }
 
 const calcVariableCosts = ({
@@ -147,6 +148,8 @@ const calcCosts = ({
         annualSalesVolumn
     })
 
+    const totalCost = variableCostsInTotal.totalVariableCosts + fixedCostsInTotal.totalFixedCosts
+
     return {
         year: currentYear,
         costsPerUnit: {
@@ -159,8 +162,9 @@ const calcCosts = ({
             year: currentYear,
             variableCosts: variableCostsInTotal,
             fixedCosts: fixedCostsInTotal,
-            totalCosts: variableCostsInTotal.totalVariableCosts + fixedCostsInTotal.totalFixedCosts
-        }
+            totalCosts: totalCost
+        },
+        amount: totalCost
     }
 }
 
@@ -199,6 +203,7 @@ const calcStartProjectedYearCosts = ({
         annualSalesVolumn
     })
 
+    const totalCost = variableCostsInTotal.totalVariableCosts + fixedCostsInTotal.totalFixedCosts
 
     return {
         year: startProjectedYear,
@@ -212,8 +217,9 @@ const calcStartProjectedYearCosts = ({
             year: startProjectedYear,
             variableCosts: variableCostsInTotal,
             fixedCosts: fixedCostsInTotal,
-            totalCosts: variableCostsInTotal.totalVariableCosts + fixedCostsInTotal.totalFixedCosts
-        }
+            totalCosts: totalCost
+        },
+        amount: totalCost
     }
 }
 

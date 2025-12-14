@@ -104,14 +104,16 @@ const findNetRevenue = ({
     return revenueSchedule.find(item => item.year === year)?.revenue.netRevenue ?? 0
 }
 
+type CostIntotal = Pick<Costs,"amount" | "year">
+
 const findCOGS = ({
     year,
     costs
 }: {
     year: number;
-    costs: Costs[];
+    costs: CostIntotal[];
 }) => {
-    return costs.find(item => item.year === year)?.costsInTotal.totalCosts ?? 0
+    return costs.find(item => item.year === year)?.amount ?? 0
 }
 
 
@@ -123,7 +125,7 @@ export const calcWorkingCapitalSchedule = ({
 }: {
     workingCapitalDays: WorkingCapitalDays[];
     revenueSchedule: RevenueSchedule[];
-    costs: Costs[];
+    costs: CostIntotal[];
     historyBalanceSheet: BalanceSheet[]
 }): WorkingCapitalSchedule[] => {
 

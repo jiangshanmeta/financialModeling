@@ -1,5 +1,3 @@
-import { MM, StartYear } from "./constant";
-
 export interface CurrentAsset {
     year: number;
     cash: number;
@@ -43,7 +41,7 @@ const calcTotalAsset = ({
 }: Omit<Asset, "year" | "totalAsset">) => currentAsset.totalCurrentAsset + longTermAsset.totalLongTermAsset
 
 
-const createAsset = ({
+export const createAsset = ({
     year,
     cash,
     accountsReceivable,
@@ -137,7 +135,7 @@ const calcTotalLiability = ({
 
 
 
-const createLiability = ({
+export const createLiability = ({
     year,
     bankDebtRevolver,
     accountsPayable,
@@ -193,6 +191,7 @@ interface Equity {
 }
 
 export interface BalanceSheet {
+    year: number;
     asset: Asset,
     liability: Liability,
     equity: Equity
@@ -200,7 +199,7 @@ export interface BalanceSheet {
 
 const calcTotalEquity = ({ commonShares, retainedEarnings }: Omit<Equity, "year" | "totalEquity">) => commonShares + retainedEarnings
 
-const createEquity = ({ year, commonShares, retainedEarnings }: Omit<Equity, "totalEquity">): Equity => {
+export const createEquity = ({ year, commonShares, retainedEarnings }: Omit<Equity, "totalEquity">): Equity => {
 
     return {
         year,
@@ -214,35 +213,3 @@ const createEquity = ({ year, commonShares, retainedEarnings }: Omit<Equity, "to
 
 }
 
-export const defaultStartYearAsset = createAsset({
-    year: StartYear,
-    cash: 0.3 * MM,
-    accountsReceivable: 28.3 * MM,
-    inventory: 35.1 * MM,
-    prepaidExpenses: 14.9 * MM,
-    currentAssetOther: 1.2 * MM,
-    netPPE: 397.7 * MM,
-    longTermAssetOther: 12.0 * MM
-})
-
-
-export const defaultStartYearLiability = createLiability({
-    year: StartYear,
-    bankDebtRevolver: 0.0 * MM,
-    accountsPayable: 18.2 * MM,
-    otherCurrentLiability: 4.8 * MM,
-    deferredIncomeTaxes: 8.0 * MM,
-    seniorSecuredTermDebt: 200.0 * MM,
-})
-
-export const defaultStartYearEquity = createEquity({
-    year: StartYear,
-    commonShares: 120.0 * MM,
-    retainedEarnings: 138.6 * MM,
-})
-
-export const defaultStartYearBalanceSheet: BalanceSheet = {
-    asset: defaultStartYearAsset,
-    liability: defaultStartYearLiability,
-    equity: defaultStartYearEquity
-}
