@@ -59,3 +59,25 @@ export const calcDebtInterest = ({
     }
 
 }
+
+export const calcFCFAfterMandatoryDebtAndDividend = ({
+    year,
+    assumption,
+    operatingCashFlow,
+    investingCashFlow,
+    // repayment means cashflow out
+    mandatoryDebtRepayments,
+    // dividends means cashflow out, it should be negative
+    dividends
+}: {
+    year: number;
+    assumption: Assumption;
+    operatingCashFlow: number;
+    investingCashFlow: number;
+    mandatoryDebtRepayments: number;
+    dividends: number;
+}) => {
+    const commonStockIssurance = assumption.equity.commonStockIssurance.find(item => item.year === year)?.amount ?? 0;
+
+    return operatingCashFlow + investingCashFlow + mandatoryDebtRepayments + commonStockIssurance + dividends;
+}

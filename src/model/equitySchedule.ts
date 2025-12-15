@@ -15,6 +15,15 @@ interface EquitySchedule {
     }
 }
 
+export const calcDividend = ({
+    netIncome,
+    dividendPayoutRate,
+}:{
+    netIncome:number;
+    dividendPayoutRate: number;
+})=>{
+    return dividendPayoutRate * Math.max(netIncome, 0);
+}
 
 export const createEquityScheduleItem = ({
     commonSharesOutstanding,
@@ -30,7 +39,10 @@ export const createEquityScheduleItem = ({
     netIncome: number;
 }): EquitySchedule => {
 
-    const commonDividend = dividendPayoutRate * Math.max(netIncome, 0);
+    const commonDividend = calcDividend({
+        dividendPayoutRate,
+        netIncome
+    })
 
     return {
         commonShares: {

@@ -15,6 +15,7 @@ import { calcWorkingCapitalSchedule } from './model/workingCapital'
 import { WorkingCapitalUI } from './ui/WorkingCapitalUI'
 import { createIncomeStatement } from './model/incomeStatement'
 import { StartYearLananceSheet } from './data'
+import { createCashFlowStatement } from './model/cashflowStatement'
 
 
 function App() {
@@ -59,6 +60,31 @@ function App() {
   })
 
 
+  const startProjectedYearIncomeStatement = createIncomeStatement({
+    revenueSchedule: revenueSchedule[1],
+    costs: costsSchedule[0],
+    year: StartProjectedYear,
+    assumption: DefaultAssumption,
+    costInflationScenarioConfig: defaultCostInflationScenarioConfig,
+    scenario,
+    prevYear: {
+      cash: 0.3 * MM,
+      revolver: 0 * MM,
+      seniorSecuredTermDebt: 200 * MM,
+    },
+    depreciationSchedule,
+  })
+
+
+  const startProjectedYearCashflowStatement = createCashFlowStatement({
+    assumption: DefaultAssumption,
+    year: StartProjectedYear,
+    preYearBalanceSheet: StartYearLananceSheet(),
+    incomeStatement: startProjectedYearIncomeStatement,
+    workingCapitalSchedule,
+
+  })
+
   return (
     <div>
       <SelectScenario value={scenario} onChange={setScenario} />
@@ -68,23 +94,10 @@ function App() {
       <WorkingCapitalUI workingCapitalSchedule={workingCapitalSchedule} />
       <br />
 
-      <pre>{
-        JSON.stringify(createIncomeStatement({
-          revenueSchedule: revenueSchedule[1],
-          costs: costsSchedule[0],
-          year: StartProjectedYear,
-          assumption: DefaultAssumption,
-          costInflationScenarioConfig: defaultCostInflationScenarioConfig,
-          scenario,
-          prevYear: {
-            cash: 0.3 * MM,
-            revolver: 0 * MM,
-            seniorSecuredTermDebt: 200 * MM,
-          },
-          depreciationSchedule,
-        }), null, 4)
+      <pre>{JSON.stringify(startProjectedYearIncomeStatement, null, 4)}</pre>
 
-      }</pre>
+      <pre>{JSON.stringify(startProjectedYearCashflowStatement, null, 4)}</pre>
+
     </div>
   )
 }

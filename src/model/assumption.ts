@@ -42,7 +42,7 @@ export interface Assumption {
     workingCapitalDays: WorkingCapitalDays[];
     equity: {
         commonDividendPayoutRate: number;
-        commonStockInsurance: Array<{
+        commonStockIssurance: Array<{
             year: number;
             amount: number;
         }>
@@ -55,6 +55,15 @@ export interface Assumption {
     costAdjustment: Array<{
         year: number;
         amount: number;
+    }>;
+    investingActivity: Array<{
+        year: number;
+        otherInvestment: number;
+    }>;
+    changeInDebtEquity: Array<{
+        year: number;
+        seniorTermDebtIssuance: number;
+        commonStockIssuance: number;
     }>
 }
 
@@ -167,7 +176,7 @@ export const DefaultAssumption: Assumption = {
     ],
     equity: {
         commonDividendPayoutRate: 20 * PERCENT,
-        commonStockInsurance: [
+        commonStockIssurance: [
             {
                 year: ProjectedYears[0],
                 amount: 0,
@@ -215,6 +224,55 @@ export const DefaultAssumption: Assumption = {
         {
             year: ProjectedYears[4],
             amount: 0,
+        },
+    ],
+    investingActivity: [
+        {
+            year: ProjectedYears[0],
+            otherInvestment: 0,
+        },
+        {
+            year: ProjectedYears[1],
+            otherInvestment: 0,
+        },
+        {
+            year: ProjectedYears[2],
+            otherInvestment: 0,
+        },
+        {
+            year: ProjectedYears[3],
+            otherInvestment: 0,
+        },
+        {
+            year: ProjectedYears[4],
+            otherInvestment: 0,
+        },
+    ],
+    changeInDebtEquity: [
+        {
+            year: ProjectedYears[0],
+            seniorTermDebtIssuance: -25 * MM,
+            commonStockIssuance: 0,
+        },
+        {
+            year: ProjectedYears[1],
+            seniorTermDebtIssuance: -25 * MM,
+            commonStockIssuance: 0,
+        },
+        {
+            year: ProjectedYears[2],
+            seniorTermDebtIssuance: -25 * MM,
+            commonStockIssuance: 0,
+        },
+        {
+            year: ProjectedYears[3],
+            seniorTermDebtIssuance: -25 * MM,
+            commonStockIssuance: 0,
+        },
+        {
+            year: ProjectedYears[4],
+            seniorTermDebtIssuance: -25 * MM,
+            commonStockIssuance: 0,
         },
     ]
 }

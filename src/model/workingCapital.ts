@@ -90,7 +90,8 @@ const calcWorkingCapitalDaysByBalanceSheet = ({
 export interface WorkingCapitalSchedule {
     year: number;
     workingCapitalDays: WorkingCapitalDays;
-    balanceSheet: WorkingCapitalBalanceSheet
+    balanceSheet: WorkingCapitalBalanceSheet;
+    changeInWorkingCapital: number;
 }
 
 
@@ -104,7 +105,7 @@ const findNetRevenue = ({
     return revenueSchedule.find(item => item.year === year)?.revenue.netRevenue ?? 0
 }
 
-type CostIntotal = Pick<Costs,"amount" | "year">
+type CostIntotal = Pick<Costs, "amount" | "year">
 
 const findCOGS = ({
     year,
@@ -181,5 +182,18 @@ export const calcWorkingCapitalSchedule = ({
             }
 
         })
-    ];
+    ].map((item, index, arr) => {
+        if (index === 0) {
+            return {
+                ...item,
+                changeInWorkingCapital: 0,
+            }
+        }
+        return {
+            ...item,
+            // this field is used in calculation of CFO with indirect method
+            // so we use previous year's net working capital - current year's net working capital
+            changeInWorkingCapital: arr[index - 1].balanceSheet.netWorkingCapital - item.balanceSheet.netWorkingCapital
+        }
+    })
 }
