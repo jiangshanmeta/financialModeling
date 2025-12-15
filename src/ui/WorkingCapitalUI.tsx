@@ -128,7 +128,7 @@ export const WorkingCapitalUI = ({
     return (
         <div style={{ padding: 16 }}>
             <Title level={2} style={{ textAlign: "center", }}>
-                Cost Schedule
+                Working Capital Schedule
             </Title>
 
             <Title level={3}>Days In</Title>

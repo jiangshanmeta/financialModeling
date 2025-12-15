@@ -16,6 +16,7 @@ import { WorkingCapitalUI } from './ui/WorkingCapitalUI'
 import { createIncomeStatement } from './model/incomeStatement'
 import { StartYearLananceSheet } from './data'
 import { createCashFlowStatement } from './model/cashflowStatement'
+import { predicateBalanceSheet } from './model/balanceSheet'
 
 
 function App() {
@@ -82,7 +83,14 @@ function App() {
     preYearBalanceSheet: StartYearLananceSheet(),
     incomeStatement: startProjectedYearIncomeStatement,
     workingCapitalSchedule,
+  })
 
+  const startProjectedYearBalanceSheet = predicateBalanceSheet({
+    year: StartProjectedYear,
+    prevYearBalanceSheet: StartYearLananceSheet(),
+    incomeStatement: startProjectedYearIncomeStatement,
+    cashFlowStatement: startProjectedYearCashflowStatement,
+    workingCapitalSchedule: workingCapitalSchedule[1],
   })
 
   return (
@@ -98,6 +106,7 @@ function App() {
 
       <pre>{JSON.stringify(startProjectedYearCashflowStatement, null, 4)}</pre>
 
+      <pre>{JSON.stringify(startProjectedYearBalanceSheet, null, 4)}</pre>
     </div>
   )
 }

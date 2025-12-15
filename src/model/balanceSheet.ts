@@ -1,3 +1,7 @@
+import type { CashFlowStatement } from "./cashflowStatement";
+import type { IncomeStatement } from "./incomeStatement";
+import type { WorkingCapitalSchedule } from "./workingCapital";
+
 export interface CurrentAsset {
     year: number;
     cash: number;
@@ -213,3 +217,70 @@ export const createEquity = ({ year, commonShares, retainedEarnings }: Omit<Equi
 
 }
 
+export const predicateBalanceSheet = ({
+    year,
+    prevYearBalanceSheet,
+    cashFlowStatement,
+    incomeStatement,
+    workingCapitalSchedule
+}: {
+    year: number;
+    prevYearBalanceSheet: BalanceSheet,
+    cashFlowStatement: CashFlowStatement,
+    incomeStatement: IncomeStatement,
+    workingCapitalSchedule: WorkingCapitalSchedule
+}): BalanceSheet => {
+
+    const cash = prevYearBalanceSheet.asset.currentAsset.cash + cashFlowStatement.changeInCashPosition;
+    const accountsReceivable = workingCapitalSchedule.balanceSheet.accountsReceivable;
+    const inventory = workingCapitalSchedule.balanceSheet.inventories;
+    const prepaidExpenses = workingCapitalSchedule.balanceSheet.prepaidExpenses;
+    const currentAssetOther = workingCapitalSchedule.balanceSheet.otherAssets;
+
+    const netPPE = prevYearBalanceSheet.asset.longTermAsset.netPPE - cashFlowStatement.investing.CAPEX - cashFlowStatement.operating.depreciationAmotization;
+    const longTermAssetOther = prevYearBalanceSheet.asset.longTermAsset.longTermAssetOther - cashFlowStatement.investing.otherInvestment
+    const asset = createAsset({
+        year,
+        cash,
+        accountsReceivable,
+        inventory,
+        prepaidExpenses,
+        currentAssetOther,
+        netPPE,
+        longTermAssetOther
+    })
+
+
+    const bankDebtRevolver = prevYearBalanceSheet.liability.currentLiability.bankDebtRevolver + cashFlowStatement.financing.revolverIssuance;
+    const accountsPayable = workingCapitalSchedule.balanceSheet.accountsPayable;
+    const otherCurrentLiability = workingCapitalSchedule.balanceSheet.otherLiabilities;
+
+    const deferredIncomeTaxes = prevYearBalanceSheet.liability.longTermLiability.deferredIncomeTaxes + incomeStatement.deferredIncomeTax
+    const seniorSecuredTermDebt = prevYearBalanceSheet.liability.longTermLiability.seniorSecuredTermDebt + cashFlowStatement.financing.termDebtIssuance;
+
+    const liability = createLiability({
+        year,
+        bankDebtRevolver,
+        accountsPayable,
+        otherCurrentLiability,
+        deferredIncomeTaxes,
+        seniorSecuredTermDebt
+    })
+
+    const commonShares = prevYearBalanceSheet.equity.commonShares + cashFlowStatement.financing.commonSharesIssuance;
+    const retainedEarnings = prevYearBalanceSheet.equity.retainedEarnings + incomeStatement.netIncome + cashFlowStatement.financing.commonDividends;
+
+    const equity = createEquity({
+        year,
+        commonShares,
+        retainedEarnings
+    })
+
+    return {
+        year,
+        asset,
+        liability,
+        equity
+    }
+
+}
