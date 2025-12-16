@@ -48,7 +48,7 @@ const calcSGA = ({
     if (year === StartProjectedYear) {
         return SGA;
     }
-    const inflations = costInflationScenarioConfig[scenario];
+    const inflations = costInflationScenarioConfig[scenario].filter(item => item.year > StartProjectedYear);
 
     for (let i = 0; i < inflations.length; i++) {
         SGA *= (1 + inflations[i].inflationRate)

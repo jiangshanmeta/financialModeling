@@ -3,7 +3,19 @@ import type { BalanceSheet, CurrentAsset, CurrentLiability } from "./balanceShee
 import type { Costs } from "./cost";
 import type { RevenueSchedule } from "./revenue";
 
-const YEAR_DAYS = 365;
+
+const isLeapYear = (year: number): boolean => {
+
+
+    const isDivisibleBy4 = year % 4 === 0;
+    const isDivisibleBy100 = year % 100 === 0;
+    const isDivisibleBy400 = year % 400 === 0;
+
+    return (isDivisibleBy4 && !isDivisibleBy100) || isDivisibleBy400;
+}
+
+
+const getYearDays = (year: number) => isLeapYear(year) ? 366 : 365
 
 const calcNetWorkingCapital = ({
     accountsReceivable,
@@ -25,6 +37,8 @@ const predicateBalanceSheetByWorkingCapitalDays = ({
     netRevenue: number;
     COGS: number;
 }) => {
+    const YEAR_DAYS = getYearDays(year);
+
 
     // use end value rather than avg value for simplicity
     const accountsReceivable = netRevenue * workingCapitalDays.accountsReceivable / YEAR_DAYS;
@@ -72,6 +86,8 @@ const calcWorkingCapitalDaysByBalanceSheet = ({
         COGS: number;
     }
 ): WorkingCapitalDays => {
+
+    const YEAR_DAYS = getYearDays(year);
 
     return {
         year,
