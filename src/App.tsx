@@ -17,6 +17,7 @@ import { StartYearLananceSheet } from './data'
 
 import { build, type FinancialStatement } from './model/build'
 import { IncomeStatementUI } from './ui/IncomeStatementUI'
+import { CashFlowStatementUI } from './ui/CashFlowStatementUI'
 
 
 function App() {
@@ -91,6 +92,7 @@ function App() {
       <DepreciationUI depreciationSchedule={depreciationSchedule} />
       <WorkingCapitalUI workingCapitalSchedule={workingCapitalSchedule} />
       <IncomeStatementUI incometStatements={financialStatements.map(item => item.incomeStatement)} />
+      <CashFlowStatementUI cashFlowStatements={financialStatements.map(item => item.cashFlowStatement)} />
       <br />
 
       <pre>{JSON.stringify(financialStatements, null, 4)}</pre>

@@ -1,34 +1,47 @@
+import type { CashFlowStatement } from "../model/cashflowStatement";
 import type { ColumnsType } from "antd/es/table";
-import type { IncomeStatement } from "../model/incomeStatement";
 import { formatMM } from "./util";
 import { Table, Typography } from 'antd';
 const { Title } = Typography;
 const INDEX_FIELD = "indexField";
 
-export const IncomeStatementUI = ({ incometStatements }: { incometStatements: IncomeStatement[] }) => {
-    const years = [...new Set(incometStatements.map(item => item.year))].sort((a, b) => a - b);
+export const CashFlowStatementUI = ({
+    cashFlowStatements,
+}: {
+    cashFlowStatements: CashFlowStatement[]
+}) => {
 
-    const incomeStatementFields: Array<keyof IncomeStatement> = [
-        "gorssRevenue",
-        "freightWarehousing",
-        "netRevenue",
-        "COGS",
-        "SG&A",
-        "totalCosts",
-        "costAdjustment",
-        "EBITDA",
-        "depreciation",
-        "EBIT",
-        "interestExpense",
-        "EBT",
-        "currentIncomeTax",
-        "deferredIncomeTax",
-        "totalIncomeTax",
-        "netIncome"
+    const years = [...new Set(cashFlowStatements.map(item => item.year))].sort((a, b) => a - b);
+
+    const mergedCashFlow = cashFlowStatements.map((item) => {
+        return {
+            year: item.year,
+            ...item.operating,
+            ...item.investing,
+            ...item.financing,
+            changeInCashPosition: item.changeInCashPosition,
+        }
+    })
+
+    const fields: Array<keyof (typeof mergedCashFlow)[number]> = [
+        "netIncome",
+        "depreciationAmotization",
+        "deferredIncomeTaxes",
+        "changesInWorkingCapital",
+        "operatingCashFlow",
+        "CAPEX",
+        "otherInvestment",
+        "investingCashFlow",
+        "revolverIssuance",
+        "termDebtIssuance",
+        "commonSharesIssuance",
+        "commonDividends",
+        "financingCashFlow",
+        "changeInCashPosition"
     ]
 
-    const transformedIncomestatement = incomeStatementFields.map((field) => {
-        const data = incometStatements.reduce<Record<number, number>>((acc, record) => {
+    const transformedCashFlow = fields.map((field) => {
+        const data = mergedCashFlow.reduce<Record<number, number>>((acc, record) => {
             return {
                 ...acc,
                 [record.year]: record[field]
@@ -43,7 +56,7 @@ export const IncomeStatementUI = ({ incometStatements }: { incometStatements: In
         }
     })
 
-    const columnsIncomeStatement = [
+    const columnsCashFlowStatement = [
         {
             title: '',
             dataIndex: INDEX_FIELD,
@@ -76,11 +89,12 @@ export const IncomeStatementUI = ({ incometStatements }: { incometStatements: In
     return (
         <div style={{ padding: 16 }}>
             <Title level={2} style={{ textAlign: "center", }}>
-                Income Statement
+                CashFlow Statement
             </Title>
+
             <Table
-                dataSource={transformedIncomestatement}
-                columns={columnsIncomeStatement as ColumnsType<(typeof transformedIncomestatement)[number]>}
+                dataSource={transformedCashFlow}
+                columns={columnsCashFlowStatement as ColumnsType<(typeof transformedCashFlow)[number]>}
                 pagination={false}
                 scroll={{ x: 'max-content' }}
                 rowKey={record => record[INDEX_FIELD]}
